@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="es">
+    
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Radio">
+    <link rel="apple-touch-icon" href="js/01.png">
+    <meta name="msapplication-TileImage" content="js/01.png">
+    <meta name="msapplication-TileColor" content="#000000">
+    <link rel="manifest" href="./manifest.json">
+    <script src="tuscript.js" defer></script>
+
+    
+    <title>Radio UTT..!! 📻 </title>
+    <link rel="shortcut icon" href="js/01.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <style>
+        body {
+            font-size: 1.5vw;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: #000000 url() bottom / cover no-repeat;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            position: relative;
+            overflow-x: hidden; 
+            overflow-y: hidden;
+            box-sizing: border-box;
+            background-attachment: fixed;
+   
+        }
+
+        #lunaradio {
+            width: 100%;
+            height: 99vh;
+            margin: auto; /* Ajusta según sea necesario */
+            padding: 0;
+        }
+
+        #contador {
+            position: absolute;
+            top: 1vh;
+            left: 1vh;
+            color: #fff;
+            z-index: 1;
+        }
+
+        #comment-btn,
+        #info-btn,
+        #contact-btn {
+            position: fixed;
+            bottom: 2vh;
+            cursor: pointer;
+            z-index: 2;
+            font-size: 2vh;
+            padding: 2vh;
+            border-radius: 50%;
+            background-color: #ffffff;
+        }
+
+        @media (max-width: 100vh) {
+            
+         body { 
+            font-size: 1vw;
+        }
+
+            #comment-btn,
+            #info-btn,
+            #contact-btn {
+                font-size:3vw;
+                padding: 1vw;
+                
+            }
+        }
+
+        #comment-btn {
+            left: 2vw;
+            margin-right: 1px;
+        }
+
+        #info-btn {
+            left: 12vw;
+            margin-right: 1px;
+        }
+
+        #contact-btn {
+            left: 22vw;
+            margin-right: 1px;
+        }
+        #comment-modal h2,
+        
+        #info-modal h2,
+        #contact-modal h2 {
+            font-size: max(1.5vw, 20px); /* Establece el tamaño mínimo que deseas para los títulos */
+        }
+
+        #comment-modal,
+        #info-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(to right, #7d7d7d, #ffffff);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            z-index: 3;
+            transition: opacity 0.5s ease-in-out;
+            max-width: 350px; /* Ajusta el valor según tus necesidades */
+            width: 90vw; /* Esto permite que la ventana sea del 90% del ancho de la ventana del navegador */
+        }
+        #info-container {
+            max-height: 400px; /* Ajusta el valor según tus necesidades */
+            overflow-y: auto;
+            scrollbar-width: thin; /* para navegadores Firefox */
+            scrollbar-color: #7d7d7d, #ffffff; /* para navegadores Firefox */
+            font-size: 18px;
+        }
+
+        /* Estilos adicionales para navegadores WebKit (Chrome, Safari) */
+        #info-container::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        #info-container::-webkit-scrollbar-thumb {
+            background-color: #7d7d7d;
+        }
+
+        #info-container::-webkit-scrollbar-track {
+            background-color: #ffffff;
+        }
+        
+        #contact-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(to right, #7d7d7d, #ffffff);
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 3;
+            transition: opacity 0.5s ease-in-out;
+            width: 50vw;
+            max-width: 300px;
+        }
+        #contact-container {
+            text-align: center; /* Centra el contenido */
+            max-height: 100vh; /* Ajusta el valor según tus necesidades */
+            overflow-y: auto;
+        }
+
+        #comment-modal.show,
+        #info-modal.show,
+        #contact-modal.show {
+            display: block;
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #comment-input {
+            width: 100%;
+            padding: 8px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        #comments-container,
+        #info-container,
+        #contact-container {
+            max-height: 30vh;
+            overflow-y: auto;
+            margin-top: 2vh;
+            text-align: left;
+            font-size: 18px;
+        }
+
+        .comment-item,
+        .info-item,
+        .contact-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2vh;
+            padding: 2vh;
+            border: 1px solid #ccc;
+            border-radius: 1vh;
+        }
+
+        .delete-btn {
+            background-color: #ff0000;
+            color: #fff;
+            padding: 1vh 2vw;
+            border: none;
+            border-radius: 1vh;
+            cursor: pointer;
+        }
+
+        .social-btn {
+            display: block;
+            margin-bottom: 1vh;
+            text-align: center;
+        }
+
+        #ad-images-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 50%; /* Ajusta según tus necesidades */
+    }
+
+    #ad-images {
+        text-align: center;
+    }
+
+    #ad-images img {
+        display: none; /* Inicia oculto */
+        max-width: 100%; /* Ajusta según tus necesidades */
+        max-height: 100vh; /* Ajusta según tus necesidades */
+    }
+
+    #ad-images img:first-child {
+        display: block; /* Muestra la primera imagen */
+    }
+    
+
+    #imagen-esquina {
+    position: fixed;
+    top: 1px; /* Ajusta según tu preferencia */
+    right: 1px; /* Ajusta según tu preferencia */
+    z-index: 999; /* Asegura que esté encima de otros elementos */
+}
+
+#imagen-esquina img {
+    width: 70px; /* Ajusta según tu preferencia */
+    height: auto; /* Mantiene la proporción */
+    /* border-radius: 50%;  Elimina esta línea para que la imagen no sea redonda */
+}
+#contact-modal {
+    /* ... otros estilos ... */
+    font-size: 16px; /* Establece el tamaño de fuente predeterminado */
+}
+
+#contact-modal p {
+    min-width: 50px; /* Establece un ancho mínimo para los párrafos */
+    font-size: max(16px, 2vw); /* Establece el tamaño de fuente mínimo entre 18px y 2vw */
+}
+
+#video-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  min-height: 100%;
+  z-index: -1;
+}
+
+
+body {
+    font-family: Arial, sans-serif;
+}
+
+
+#chat-modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    z-index: 3;
+    transition: opacity 0.5s ease-in-out;
+    max-width: 350px;
+    width: 90vw;
+}
+
+#chat-modal.show {
+    display: block;
+}
+
+#chat-container {
+    text-align: center;
+    font-size: 18px;
+}
+
+#chat-messages {
+    max-height: 30vh;
+    overflow-y: auto;
+    margin-bottom: 2vh;
+    background: #f9f9f9;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#chat-input-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#chat-input {
+    width: 70%;
+    padding: 8px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#send-chat-btn {
+    width: 25%;
+    padding: 8px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    font-size: 14px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#send-chat-btn:hover {
+    background-color: #0056b3;
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #333;
+}
+
+/* Ajustes generales para el botón de chat en vivo */
+#chat-btn {
+    position: fixed;
+    bottom: 2vh; /* Más cerca del borde inferior */
+    right: 2vw;  /* Más cerca del borde derecho */
+    background-color: #007bff;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2vh; /* Tamaño de fuente similar a los otros botones */
+    padding: 2vh;   /* Relleno similar a los otros botones */
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    animation: pulse 1s infinite; /* Animación aplicada de forma continua */
+    transition: background-color 0.3s;
+}
+
+/* Ajustes específicos para dispositivos móviles */
+@media (max-width: 768px) {
+    #chat-btn {
+        font-size: 3vw; /* Tamaño de fuente ajustado para móviles */
+        padding: 3vw;   /* Relleno ajustado para móviles */
+    }
+}
+
+/* Animación de pulsación */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Efecto de hover (opcional) para cambiar el color del fondo */
+#chat-btn:hover {
+    background-color: #0056b3;
+}
+
+
+
+    </style>
+</head>
+
+<body>
+     <div id="offline-message" style="display: none; background-color: rgba(0, 0, 0, 0.8); color: white; position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999;">
+    <h1>Sin conexión a Internet</h1>
+    <img src="js/no-wifi.png" alt="Imagen de conexión perdida" style="width: 100px; height: auto;">
+    <!-- Puedes personalizar este mensaje como desees -->
+</div>
+
+
+    <video autoplay muted loop id="video-background" preload="auto">
+        <source src="js/Fondo6.mp4" type="video/mp4">
+        <!-- Agrega formatos adicionales del video aquí si es necesario -->
+        Tu navegador no soporta el elemento de video.
+      </video>
+      
+    <div id="contador">
+        <a href="https://www.contadorvisitasgratis.com" title="contador de visitas para web">
+            <img src="https://counter4.optistats.ovh/private/contadorvisitasgratis.php?c=ucek5elfxm7r21zmrnlcb7yg1f9k4ud2" border="0" title="contador de visitas para web" alt="contador de visitas para web">
+        </a>
+    </div>
+
+    <div id="lunaradio">
+        
+        </div>
+    </div>
+
+    <!-- Agrega esto al final del body de tu HTML -->
+<div id="notification" style="display: none;">
+    <p>¡Estás escuchando Radio UTT!</p>
+</div>
+
+    
+
+    <div id="chat-btn">
+        <i class="fas fa-comments"></i>
+    </div>
+
+    <div id="chat-modal">
+        <div class="modal-close-btn" onclick="closeChatModal()">&times;</div>
+        <div id="chat-container">
+            <h2>Chat en Vivo 💬</h2>
+            <div id="chat-messages"></div>
+            
+            <div id="chat-input-container">
+                <input type="text" id="chat-input" placeholder="Escribe tu mensaje...">
+                <button id="send-chat-btn" onclick="sendMessage()">Enviar</button>
+                
+            </div>
+        </div>
+        
+    </div>
+
+    <div id="comment-btn">
+        <i class="fas fa-bullhorn"></i>
+    </div>
+
+    <div id="info-btn">
+        <i class="fas fa-info-circle"></i>
+    </div>
+
+    <div id="contact-btn">
+        <i class="fas fa-envelope"></i>
+    </div>
+    <div id="imagen-esquina">
+        <img src="js/uttlogo.png" alt="Imagen Esquina">
+    </div>
+
+    <div id="comment-modal">
+        <span class="modal-close-btn" onclick="closeComments()">&times;</span>
+        <h2>Anuncios 📣</h2>
+        <div id="ad-images">
+            <img src="js/publicidad1.png" alt="h">
+            <img src="js/publicidad2.png" alt="h">
+            <img src="js/publicidad3.jpg" alt="h">
+            <img src="js/publicidad4.jpg" alt="h">
+            <img src="js/publicidad5.jpg" alt="h">
+            <img src="js/publicidad6.jpg" alt="h">
+            <img src="js/publicidad7.jpg" alt="h">
+            <img src="js/publicidad8.jpg" alt="h">
+    
+
+            <!-- Agrega más imágenes según sea necesario -->
+        </div>
+
+        <div id="comments-container"></div>
+    </div>
+
+    <div id="info-modal">
+        <span class="modal-close-btn" onclick="closeInfo()">&times;</span>
+        <h2>Información ℹ️</h2>
+        <div id="info-container">
+            <a>¡Bienvenido a Radio UTT!</a>
+            <hr> </hr>
+            <h2>Por qué existir:</h2>
+            <p>Ser la plataforma radiofónica líder en la Universidad Tecnológica de Tlaxcala, comprometida con la excelencia académica y cultural, brindando programas innovadores y de calidad que inspiren, informen y entretengan a la comunidad universitaria y a la sociedad en general.</p>
+            <img src="https://cdn-icons-png.flaticon.com/128/2421/2421304.png" alt="" style="width: 100%; max-width: 60px; display: block; margin: 0 auto;">
+            <hr> </hr>
+            <h2>Nuestro objetivo:</h2>
+            <p>Ser un medio de comunicación para la comunidad universitaria, donde se den a conocer las diversas actividades y acciones de nuestra casa de estudios.</p>
+            <img src="https://cdn-icons-png.flaticon.com/128/5165/5165938.png" alt="" style="width: 100%; max-width: 60px; display: block; margin: 0 auto;">
+            <hr> </hr>
+            <h2>Valores:</h2>
+            <p>Excelencia: Buscamos la calidad en todo lo que hacemos, desde la producción de programas hasta la interacción con nuestra audiencia. </p>
+            <p>Diversidad: Valoramos y celebramos la diversidad en todas sus formas, promoviendo la inclusión y el respeto mutuo. </p>
+            <p>Innovación: Nos esforzamos por ser pioneros en la creación de contenidos originales y en la adopción de nuevas tecnologías para enriquecer la experiencia radiofónica.</p>
+            <p>Compromiso: Estamos comprometidos con la comunidad universitaria y la sociedad, siendo un medio de comunicación que aporta de manera positiva al entorno</p>
+            <img src="https://cdn-icons-png.flaticon.com/128/4729/4729308.png" alt="" style="width: 10%; max-width: 60px; display: block; margin: 0 auto;">
+            <hr> </hr>
+            <p>  </p>
+        </div>
+    </div>
+
+    <div id="contact-modal">
+        <span class="modal-close-btn" onclick="closeContact()">&times;</span>
+        <h2>Contacto 📧 </h2>
+        
+        <div id="contact-container">
+            <a class="social-btn" href="https://www.facebook.com/UniversidadTecnologicadeTlaxcala" target="_blank"><i class="fab fa-facebook"></i> Facebook</a>
+            <a class="social-btn" href="https://www.instagram.com/ut_tlaxcala/?hl=es" target="_blank"><i class="fab fa-instagram"></i> Instagram</a>
+            <a class="social-btn" href="https://www.youtube.com/@uttoficial" target="_blank"><i class="fab fa-youtube"></i> YouTube</a>
+            <a class="social-btn" href="https://twitter.com/i/flow/login?redirect_after_login=%2FUTTlaxcala" target="_blank"><i class="fab fa-twitter"></i> Twitter</a>
+            <a class="social-btn" href="https://whatsapp.com/channel/0029VaMvKtJ0gcfLHlwLGD2s" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+            
+
+            
+        </div>
+        <P>Ubicación 📍 </P>
+        <p> Dirección: A El Carmen Xalpatlahuaya s/n, 90500 Huamantla, Tlax.</p>
+        <div id="map-container">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15054.376712369289!2d-97.9665994!3d19.386717!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85cffced901ddce7%3A0x900a8087658724ce!2sUniversidad%20Tecnol%C3%B3gica%20de%20Tlaxcala!5e0!3m2!1ses-419!2smx!4v1703809831513!5m2!1ses-419!2smx" width="150" height="160" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe> <!-- Pega aquí el código de inserción de Google Maps -->
+        </div>
+
+    
+        
+    </div>
+
+    <script src="./script.js"> </script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="js/lunaradio-sincors.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Agrega este script para el cambio de imágenes
+        var currentIndex = 0;
+        var images = document.querySelectorAll('#ad-images img');
+        var totalImages = images.length;
+    
+        function showImage(index) {
+            images.forEach(img => img.style.display = 'none');
+            images[index].style.display = 'block';
+        }
+    
+        function nextImage() {
+            currentIndex = (currentIndex + 1) % totalImages;
+            showImage(currentIndex);
+        }
+    
+        // Cambia el tiempo (en milisegundos) según tus necesidades
+        setInterval(nextImage, 5000);
+    </script>
+     
+
+<script>
+    function checkOnlineStatus() {
+        var offlineMessage = document.getElementById("offline-message");
+        if (!navigator.onLine) {
+            offlineMessage.style.display = "flex";
+        } else {
+            offlineMessage.style.display = "none";
+        }
+    }
+
+    window.addEventListener("load", function() {
+        checkOnlineStatus();
+
+        window.addEventListener("online", function() {
+            checkOnlineStatus();
+        });
+
+        window.addEventListener("offline", function() {
+            checkOnlineStatus();
+        });
+    });
+</script>
+
+
+
+    <script>
+        $("#lunaradio").lunaradio({ 
+            userinterface: "big",
+            backgroundcolor: "",
+            fontcolor: "#ffffff",
+            hightlightcolor: "#080000",
+            fontname: "Courier",
+            googlefont: "Anton&display=swap",
+            fontratio: "0.4",
+            radioname: ".:: Radio Universidad UTT ::.",
+            scroll: "true",
+            coverimage: "js/logo3.png",
+            onlycoverimage: "False",
+            coverstyle: "animated",
+            usevisualizer: "real",
+            visualizertype: "1",
+            metadatatechnic: "",
+            ownmetadataurl: "",
+            streamurl: "https://stream.zeno.fm/zn7knqgkbx4tv",
+            streamtype: "radiozeno",
+            icecastmountpoint: "",
+            shoutcastpath: "/stream",
+            shoutcastid: "1",
+            streamsuffix: "",
+            radionomyid: "",
+            radionomyapikey: "",
+            radiojarid: "",
+            radiocoid: "",
+            itunestoken: "1000lIPN",
+            metadatainterval: "15000",
+            volume: "50",
+            debug: "false",
+            autoplay: "true"
+        });
+
+        $("#comment-btn").click(function () {
+            $("#comment-modal").addClass("show");
+            loadComments();
+        });
+
+        $("#info-btn").click(function () {
+            $("#info-modal").addClass("show");
+        });
+
+        $("#contact-btn").click(function () {
+            $("#contact-modal").addClass("show");
+        });
+
+        $(".modal-close-btn").click(function () {
+            $(".modal").removeClass("show");
+        });
+
+        
+
+        function closeComments() {
+            $("#comment-modal").removeClass("show");
+        }
+
+        function closeInfo() {
+            $("#info-modal").removeClass("show");
+        }
+
+        function closeContact() {
+            $("#contact-modal").removeClass("show");
+        }
+
+        function sendMessage() {
+            alert("Mensaje enviado");
+            closeContact();
+        }
+    </script>
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
